@@ -16,7 +16,6 @@
 
 #include <esp_cmd.h>
 
-#include <uart.h>
 #include <user_interface.h>
 #include <wifi.h>
 
