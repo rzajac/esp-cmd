@@ -47,7 +47,7 @@ OBJCOPY = xtensa-lx106-elf-objcopy
 UNAME_S := $(shell uname -s)
 
 # Which modules (subdirectories) of the project to include in compiling.
-MODULES = include example/lib/uart esp_cmd example
+MODULES = example/lib/esp_pin/esp_pin esp_cmd example
 
 # The extra include directories. Absolute paths.
 EXTRA_INCDIR =

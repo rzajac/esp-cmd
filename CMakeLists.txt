@@ -16,25 +16,24 @@ endif()
 
 message("Open SDK at $ENV{ESP_OPEN_SDK}")
 
-include_directories(${CMAKE_CURRENT_LIST_DIR}/example/lib/uart/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/example/lib/esp_pin/esp_pin/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/example/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/esp_cmd/include)
 include_directories($ENV{ESP_OPEN_SDK}/sdk/include)
 
 set(HEADER_FILES
         esp_cmd/include/esp_cmd.h
-        example/lib/uart/include/uart.h
-        example/lib/uart/include/uart_register.h
+        example/lib/esp_pin/esp_pin/include/esp_sdo.h
         example/include/user_config.h
         esp_cmd/include/esp_cmd.h
         example/include/wifi.h
-        )
+)
 
 set(SOURCE_FILES
         example/main.c
-        example/lib/uart/uart.c
+        example/lib/esp_pin/esp_pin/esp_sdo.c
         esp_cmd/esp_cmd.c
         example/wifi.c
-        )
+)
 
 add_library(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
