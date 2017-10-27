@@ -79,14 +79,6 @@ To pull updates.
 $ git subtree pull --prefix lib/esp_cmd esp-cmd master --squash
 ```
 
-# Dependencies.
-
-This library depends on:
-
-- https://github.com/rzajac/esp-pin
-
-Also see [dep_add.sh](dep_add.sh) and [dep_update.sh](dep_update.sh) if you wish to add dependencies using git subtree.
-
 ## TODO
 
 Unfortunately stopping the server does not close the port. Esp keeps it open which can be checked with:
