@@ -14,12 +14,13 @@
  * under the License.
  */
 
-#include <wifi.h>
 
+#include <wifi.h>
 #include <osapi.h>
 
 
-void ICACHE_FLASH_ATTR wifi_connect()
+void ICACHE_FLASH_ATTR
+wifi_connect()
 {
   struct station_config station_config;
 
@@ -37,7 +38,8 @@ void ICACHE_FLASH_ATTR wifi_connect()
   wifi_station_connect();
 }
 
-void ICACHE_FLASH_ATTR wifi_event_cb(System_Event_t *event)
+void ICACHE_FLASH_ATTR
+wifi_event_cb(System_Event_t *event)
 {
   switch (event->event) {
     case EVENT_STAMODE_CONNECTED:

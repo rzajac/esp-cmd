@@ -14,7 +14,7 @@
  * under the License.
  */
 
-#include <esp_cmd.h>
+#include "../src/include/esp_cmd.h"
 
 #include <user_interface.h>
 #include <wifi.h>
@@ -22,7 +22,8 @@
 
 uint8_t cmd_count;
 
-void server_stop_cb(sint8 err)
+void ICACHE_FLASH_ATTR
+server_stop_cb(sint8 err)
 {
   os_printf("Sever stopped with err: %d\n", err);
 }

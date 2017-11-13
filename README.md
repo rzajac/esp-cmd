@@ -1,32 +1,37 @@
 ## Command server for ESP8266.
 
-Fast way to add TCP command server to your ESP8266.
-
+This library will allow you to add TCP command server to your ESP8266.
 The user API is just four functions:
 
-- `esp_cmd_start` - to start the server,
-- `esp_cmd_reg_cb` - to register your command handler,
-- `esp_cmd_stop` and `esp_cmd_schedule_stop` - to stop stop the server,
-- `esp_cmd_block` block further connections
+Function                |Description
+------------------------|-----------
+`esp_cmd_start`         | Start the server.
+`esp_cmd_reg_cb`        | Register your command handler.
+`esp_cmd_stop`          | Stop the server.
+`esp_cmd_schedule_stop` | Schedule server stop.
+`esp_cmd_block`         | Block further connections.
 
 The `esp_cmd_schedule_stop` should be used if you want to stop the server from 
-`espconn` callback, see the example.
+`espconn` callback, see the [example program](example/main.c).
 
-You can turn on debug mode by defining ESP_CMD_DEBUG_ON 1 or changing it in `esp_cmd/include/esp_cmd_debug.h` 
+You can turn on debug mode by defining ESP_CMD_DEBUG_ON 1 or changing it 
+in `esp_cmd.h` 
+
+## Build environment.
+
+This library is part of my build system for ESP8266 based on CMake.
+To compile / flash examples you will have to have the ESP development 
+environment setup as described at https://github.com/rzajac/esp-dev-env.
 
 ## Build and flash the example.
 
-By default Makefile:
-- looks for esp-open-sdk in `$HOME/lib/esp-open-sdk/sdk`
-- uses `/dev/ttyUSB0` for USB to serial communication
-- assumes `esptool.py` exists in user `$PATH`
-
-Rename `example/include/user_config.example.h` to `example/include/user_config.h` and put your
-access point connection details then:
+Edit `example/include/user_config.h` to put your access point connection 
+details then do:
 
 ```
-$ make DEBUG_ON=1
-$ make flash
+$ cd build
+$ cmake ..
+$ make cmd_example_flash
 $ miniterm.py /dev/ttyUSB0 74880
 ```
 
@@ -59,25 +64,28 @@ CMD DBG: SENT: 192.168.1.149:34146
 CMD DBG: DISC: 192.168.1.149:34146
 ```
 
-Sending the test command twice will close the server and your test messages will no longer return 
-`OK`.
+Sending the test command twice will close the server and your test messages 
+will no longer return `OK`.
 
 ## Integration.
 
-The best way to integrate this library is to use git subtree.
+If you're using my build environment you can install this library by issuing:
 
-To add source to your project use:
-
-```text
-$ git remote add -f esp-cmd git@github.com:rzajac/esp-cmd.git
-$ git subtree add --prefix lib/esp_cmd esp-cmd master --squash
+```
+$ wget -O - https://raw.githubusercontent.com/rzajac/esp-cmd/master/install.sh | bash
 ```
 
-To pull updates.
+or if you already cloned this repository you can do:
 
-```text
-$ git subtree pull --prefix lib/esp_cmd esp-cmd master --squash
 ```
+$ cd build
+$ cmake ..
+$ make
+$ make install
+```
+
+which will install the library, headers and scripts in appropriate places 
+in `$ESPROOT`.
 
 ## TODO
 

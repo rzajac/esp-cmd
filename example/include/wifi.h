@@ -21,14 +21,15 @@
 #include <user_interface.h>
 
 /** Connect to WiFi access point. */
-void ICACHE_FLASH_ATTR wifi_connect();
+void ICACHE_FLASH_ATTR
+wifi_connect();
 
 /** WiFi event callback */
-void ICACHE_FLASH_ATTR wifi_event_cb(System_Event_t *event);
+void ICACHE_FLASH_ATTR
+wifi_event_cb(System_Event_t *event);
 
 // Espressif SDK missing includes.
 void ets_isr_mask(unsigned intr);
-
 void ets_isr_unmask(unsigned intr);
 
 #endif //ESP_CMD_WIFI_H
