@@ -14,13 +14,14 @@
  * under the License.
  */
 
-#include "../src/include/esp_cmd.h"
 
+#include <esp_cmd.h>
+#include <esp_sdo.h>
 #include <user_interface.h>
 #include <wifi.h>
-#include <esp_sdo.h>
 
 uint8_t cmd_count;
+
 
 void ICACHE_FLASH_ATTR
 server_stop_cb(sint8 err)

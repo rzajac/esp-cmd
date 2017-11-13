@@ -1,7 +1,7 @@
 ## Command server for ESP8266.
 
-This library will allow you to add TCP command server to your ESP8266.
-The user API is just four functions:
+With this library you will be able to add TCP command server to your ESP8266
+programs. The user API is just four functions:
 
 Function                |Description
 ------------------------|-----------
@@ -14,7 +14,7 @@ Function                |Description
 The `esp_cmd_schedule_stop` should be used if you want to stop the server from 
 `espconn` callback, see the [example program](example/main.c).
 
-You can turn on debug mode by defining ESP_CMD_DEBUG_ON 1 or changing it 
+You can turn on debug mode by defining `ESP_CMD_DEBUG_ON` 1 or changing it 
 in `esp_cmd.h` 
 
 ## Build environment.
@@ -31,7 +31,7 @@ details then do:
 ```
 $ cd build
 $ cmake ..
-$ make cmd_example_flash
+$ make cmd_ex_flash
 $ miniterm.py /dev/ttyUSB0 74880
 ```
 

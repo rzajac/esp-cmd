@@ -18,18 +18,18 @@
 
 find_package(esp_sdo REQUIRED)
 
-add_executable(cmd_example
+add_executable(cmd_ex
     main.c
     wifi.c
     include/wifi.h
     ${ESP_USER_CONFIG})
 
-target_include_directories(cmd_example PUBLIC
+target_include_directories(cmd_ex PUBLIC
     ${esp_sdo_INCLUDE_DIRS}
     ${ESP_USER_CONFIG_DIR})
 
-target_link_libraries(cmd_example
+target_link_libraries(cmd_ex
     ${esp_sdo_LIBRARIES}
     esp_cmd)
 
-esp_gen_exec_targets(cmd_example)
+esp_gen_exec_targets(cmd_ex)
