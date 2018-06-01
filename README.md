@@ -57,11 +57,10 @@ OK
 Back in ESP8266 console you should see something like this:
 
 ```
-CMD DBG: CONN: 192.168.1.149:34146
-Received command (1): test
-CMD DBG: REC: test (4)
-CMD DBG: SENT: 192.168.1.149:34146
-CMD DBG: DISC: 192.168.1.149:34146
+CMD DBG: connected 192.168.1.149:34146
+CMD DBG: received 4 bytes
+CMD DBG: sent to 192.168.1.149:34146
+CMD DBG: disconnected 192.168.1.149:34146
 ```
 
 Sending the test command twice will close the server and your test messages 

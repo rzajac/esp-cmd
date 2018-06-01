@@ -89,7 +89,7 @@ disconnect_conn_cb(void *arg)
   disc_timer *dt = (disc_timer *) arg;
 
   err = espconn_disconnect((struct espconn *) dt->payload);
-  if (err) ESP_CMD_ERROR("failure to disconnect (%d).\n", err);
+  if (err) ESP_CMD_ERROR("error %d on disconnect\n", err);
 
   os_timer_disarm(dt->timer);
   os_free(dt->timer);
@@ -186,7 +186,7 @@ static void ICACHE_FLASH_ATTR
 sent_cb(void *tcp_cn)
 {
   struct espconn *conn = tcp_cn;
-  ESP_CMD_DEBUG("sent to: %d.%d.%d.%d:%d\n",
+  ESP_CMD_DEBUG("sent to %d.%d.%d.%d:%d\n",
                 IP2STR(conn->proto.tcp->remote_ip),
                 conn->proto.tcp->remote_port);
 
@@ -204,7 +204,7 @@ static void ICACHE_FLASH_ATTR
 reconnect_cb(void *tcp_cn, sint8 err)
 {
   struct espconn *conn = tcp_cn;
-  ESP_CMD_DEBUG("reconnected: %d.%d.%d.%d:%d (%d)\n",
+  ESP_CMD_DEBUG("reconnected %d.%d.%d.%d:%d (err: %d)\n",
                 IP2STR(conn->proto.tcp->remote_ip),
                 conn->proto.tcp->remote_port,
                 err);
@@ -223,7 +223,7 @@ connect_cb(void *tcp_cn)
 {
   uint8_t i;
   struct espconn *conn = tcp_cn;
-  ESP_CMD_DEBUG("connected: %d.%d.%d.%d:%d\n",
+  ESP_CMD_DEBUG("connected %d.%d.%d.%d:%d\n",
                 IP2STR(conn->proto.tcp->remote_ip),
                 conn->proto.tcp->remote_port);
 
