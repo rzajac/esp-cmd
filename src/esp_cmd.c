@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Rafal Zajac <rzajac@gmail.com>.
+ * Copyright 2018 Rafal Zajac <rzajac@gmail.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may obtain
@@ -18,7 +18,8 @@
 #include <mem.h>
 
 // Structure used to track TCP connections.
-typedef struct {
+typedef struct
+{
   struct espconn *conn; // The tracked connection.
   uint8_t index;        // The index in connection pool.
   uint8 rem_ip[4];      // The remote IP associated with the connection.
@@ -26,7 +27,8 @@ typedef struct {
 } tcp_conn;
 
 // Structure used during scheduled server stop.
-typedef struct {
+typedef struct
+{
   os_timer_t *timer;
   esp_cmd_stop_cb *stop_cb;
   void *payload;
@@ -63,14 +65,17 @@ find_conn(struct espconn *conn, uint8 *rem_ip, int rem_port)
 {
   uint8_t i;
   for (i = 0; i < ESP_CMD_MAX_CONN; i++) {
-    if (conn_pool[i] && conn_pool[i]->rem_port == rem_port && memcmp(conn_pool[i]->rem_ip, rem_ip, 4) == 0) {
+    if (conn_pool[i]
+        && conn_pool[i]->rem_port == rem_port
+        && memcmp(conn_pool[i]->rem_ip, rem_ip, 4) == 0) {
+
       conn_pool[i]->conn = conn;
 
       return conn_pool[i];
     }
   }
 
-  ESP_CMD_ERROR("Unknown connection: %d.%d.%d.%d:%d\n",
+  ESP_CMD_ERROR("unknown connection: %d.%d.%d.%d:%d\n",
                 IP2STR(conn->proto.tcp->remote_ip),
                 conn->proto.tcp->remote_port);
 
@@ -84,7 +89,7 @@ disconnect_conn_cb(void *arg)
   disc_timer *dt = (disc_timer *) arg;
 
   err = espconn_disconnect((struct espconn *) dt->payload);
-  if (err) ESP_CMD_ERROR("Disconnection failure (%d).\n", err);
+  if (err) ESP_CMD_ERROR("failure to disconnect (%d).\n", err);
 
   os_timer_disarm(dt->timer);
   os_free(dt->timer);
@@ -125,16 +130,19 @@ receive_cb(void *tcp_conn, char *cmd, unsigned short length)
   char *resp_buff = os_zalloc(ESP_CMD_MAX_RESP_LEN);
   uint16 resp_buff_use;
 
-  ESP_CMD_DEBUG("REC: %s (%d)\n", cmd, length);
+  ESP_CMD_DEBUG("received %d bytes\n", length);
 
   // Call user callback.
   if (cmd_cb != NULL) {
-    resp_buff_use = cmd_cb((uint8_t *) resp_buff, ESP_CMD_MAX_RESP_LEN, (const uint8_t *) cmd, length);
+    resp_buff_use = cmd_cb((uint8_t *) resp_buff,
+                           ESP_CMD_MAX_RESP_LEN,
+                           (const uint8_t *) cmd,
+                           length);
 
     // Return response.
     if (resp_buff_use > 0) {
       err = espconn_send(conn, (uint8 *) resp_buff, resp_buff_use);
-      if (err) ESP_CMD_ERROR("Sending response failed with error %d.\n", err);
+      if (err) ESP_CMD_ERROR("error %d sending response\n", err);
     }
   }
 
@@ -152,11 +160,13 @@ disconnect_cb(void *tcp_cn)
 {
   uint8_t i;
   struct espconn *conn = tcp_cn;
-  ESP_CMD_DEBUG("DISC: %d.%d.%d.%d:%d\n",
+  ESP_CMD_DEBUG("disconnected %d.%d.%d.%d:%d\n",
                 IP2STR(conn->proto.tcp->remote_ip),
                 conn->proto.tcp->remote_port);
 
-  tcp_conn *cp = find_conn(conn, conn->proto.tcp->remote_ip, conn->proto.tcp->remote_port);
+  tcp_conn *cp = find_conn(conn,
+                           conn->proto.tcp->remote_ip,
+                           conn->proto.tcp->remote_port);
   if (cp == NULL) {
     // This should not happen.
     return;
@@ -176,7 +186,10 @@ static void ICACHE_FLASH_ATTR
 sent_cb(void *tcp_cn)
 {
   struct espconn *conn = tcp_cn;
-  ESP_CMD_DEBUG("SENT: %d.%d.%d.%d:%d\n", IP2STR(conn->proto.tcp->remote_ip), conn->proto.tcp->remote_port);
+  ESP_CMD_DEBUG("sent to: %d.%d.%d.%d:%d\n",
+                IP2STR(conn->proto.tcp->remote_ip),
+                conn->proto.tcp->remote_port);
+
   // Called just to update the tcp_cn->conn.
   find_conn(conn, conn->proto.tcp->remote_ip, conn->proto.tcp->remote_port);
 }
@@ -191,7 +204,11 @@ static void ICACHE_FLASH_ATTR
 reconnect_cb(void *tcp_cn, sint8 err)
 {
   struct espconn *conn = tcp_cn;
-  ESP_CMD_DEBUG("RECO: %d.%d.%d.%d:%d (%d)\n", IP2STR(conn->proto.tcp->remote_ip), conn->proto.tcp->remote_port, err);
+  ESP_CMD_DEBUG("reconnected: %d.%d.%d.%d:%d (%d)\n",
+                IP2STR(conn->proto.tcp->remote_ip),
+                conn->proto.tcp->remote_port,
+                err);
+
   // Called just to update the tcp_cn->conn.
   find_conn(conn, conn->proto.tcp->remote_ip, conn->proto.tcp->remote_port);
 }
@@ -206,21 +223,23 @@ connect_cb(void *tcp_cn)
 {
   uint8_t i;
   struct espconn *conn = tcp_cn;
-  ESP_CMD_DEBUG("CONN: %d.%d.%d.%d:%d\n", IP2STR(conn->proto.tcp->remote_ip), conn->proto.tcp->remote_port);
+  ESP_CMD_DEBUG("connected: %d.%d.%d.%d:%d\n",
+                IP2STR(conn->proto.tcp->remote_ip),
+                conn->proto.tcp->remote_port);
 
   // Find empty slot in connection pool.
   for (i = 0; i < ESP_CMD_MAX_CONN; i++) if (conn_pool[i] == NULL) break;
   if (i == ESP_CMD_MAX_CONN) {
     // This should never happen because we used
     // espconn_tcp_set_max_con_allow but you never know :)
-    ESP_CMD_ERROR("Connection limit reached.\n");
+    ESP_CMD_ERROR("connection limit reached\n");
     schedule_disconnect(conn);
     return;
   }
 
   conn_pool[i] = os_zalloc(sizeof(tcp_conn));
   if (conn_pool[i] == NULL) {
-    ESP_CMD_ERROR("Out of memory.\n");
+    ESP_CMD_ERROR("out of memory\n");
     // We do not even try to disconnect.
     return;
   }
@@ -271,7 +290,7 @@ esp_cmd_start(int port, uint8 max_conn, esp_cmd_cb *cb)
   cmd_cb = cb;
   espconn_tcp_set_max_con_allow(tcp_server, max_conn);
 
-  ESP_CMD_DEBUG("Command server *:%d started with max_conn: %d.\n", port, max_conn);
+  ESP_CMD_DEBUG("cmd server *:%d started with max_conn: %d.\n", port, max_conn);
 
   return ESPCONN_OK;
 }
@@ -299,14 +318,14 @@ esp_cmd_stop()
 
     err = espconn_disconnect(conn_pool[i]->conn);
     if (err == ESPCONN_OK) {
-      ESP_CMD_DEBUG("Force close %d.%d.%d.%d:%d OK.\n",
+      ESP_CMD_DEBUG("force close %d.%d.%d.%d:%d OK.\n",
                     IP2STR(conn_pool[i]->conn->proto.tcp->remote_ip),
                     conn_pool[i]->conn->proto.tcp->remote_port);
     } else {
-      ESP_CMD_ERROR("Closing connection %d.%d.%d.%d:%d (%d) failed.\n",
+      ESP_CMD_ERROR("error %d closing connection %d.%d.%d.%d:%d\n",
+                    err,
                     IP2STR(conn_pool[i]->conn->proto.tcp->remote_ip),
-                    conn_pool[i]->conn->proto.tcp->remote_port,
-                    err);
+                    conn_pool[i]->conn->proto.tcp->remote_port);
     }
 
     os_free(conn_pool[i]);
@@ -321,7 +340,7 @@ esp_cmd_stop()
     os_free(tcp_server);
     tcp_server = NULL;
   } else {
-    ESP_CMD_ERROR("Failed to stop server (%d).\n", err);
+    ESP_CMD_ERROR("error %d stopping server\n", err);
     // Restore user callback and max connections values.
     cmd_cb = cmd_cb_back;
     espconn_tcp_set_max_con_allow(tcp_server, (uint8) max_conn_back);

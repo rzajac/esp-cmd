@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Rafal Zajac <rzajac@gmail.com>.
+ * Copyright 2018 Rafal Zajac <rzajac@gmail.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may obtain
@@ -58,7 +58,10 @@
  *
  * @return Number of bytes written to the res buffer.
  */
-typedef uint16 (esp_cmd_cb)(uint8_t *res, uint16 res_len, const uint8_t *req, uint16_t req_len);
+typedef uint16 (esp_cmd_cb)(uint8_t *res,
+                            uint16 res_len,
+                            const uint8_t *req,
+                            uint16_t req_len);
 
 /**
  * The callback when stopping command server using esp_cmd_schedule_stop.
@@ -83,7 +86,8 @@ esp_cmd_start(int port, uint8 max_conn, esp_cmd_cb *cb);
 /**
  * Stop command server.
  *
- * Do not call this in espconn callbacks. Use esp_cmd_schedule_server_stop instead.
+ * Do not call this in espconn callbacks.
+ * Use esp_cmd_schedule_server_stop instead.
  *
  * @return The one of the ESPCONN_* error constants defined in espconn.h file or
  *         ESP_CMD_ERR_ALREADY_STARTED, ESP_CMD_ERR_ALREADY_STOPPED.
