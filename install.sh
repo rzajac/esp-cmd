@@ -30,34 +30,36 @@ LIB_REPO="https://github.com/${LIB_FULL_NAME}"
 LIB_NAME=${LIB_FULL_NAME##*/}
 CMAKE=`which cmake`
 
-# Remove temporary directory.
-function rm_tmp() {
-    echo "Removing ${TMP_DIR}"
-    rm -rf ${TMP_DIR}
-}
+LIB_REPO="https://github.com/${LIB_FULL_NAME}"
+LIB_NAME=${LIB_FULL_NAME##*/}
+CMAKE=`which cmake`
 
 # Check / set ESPROOT.
 if [ "${ESPROOT}" == "" ]; then ESPROOT=$HOME/esproot; fi
 if ! [ -d "${ESPROOT}" ]; then mkdir -p ${ESPROOT}; fi
 echo "Using ${ESPROOT} as ESPROOT"
 
-echo "Cloning ${LIB_REPO} to temporary directory ${TMP_DIR}."
-git clone ${LIB_REPO} ${TMP_DIR}
-if [ $? != 0 ]; then
-    echo "Error: Cloning ${LIB_REPO} failed!"
-    rm_tmp
-    exit 1
+LIB_DST_DIR=${ESPROOT}/src/${LIB_NAME}
+
+echo "Cloning ${LIB_REPO} to ${LIB_DST_DIR}."
+if [ -d "${LIB_DST_DIR}" ]; then
+    echo "Directory ${LIB_DST_DIR} already exists. Will git reset."
+    (cd ${LIB_DST_DIR} && git fetch && git reset --hard origin master)
+else
+    git clone ${LIB_REPO} ${LIB_DST_DIR}
+    if [ $? != 0 ]; then
+        echo "Error: Cloning ${LIB_REPO} failed!"
+        exit 1
+    fi
 fi
 
 echo "Installing library ${LIB_NAME} to ${ESPROOT}"
-mkdir ${TMP_DIR}/auto-build
-(cd ${TMP_DIR}/auto-build && ${CMAKE} .. && make install)
+rm -rf ${LIB_DST_DIR}/build
+mkdir ${LIB_DST_DIR}/build
+(cd ${LIB_DST_DIR}/build && ${CMAKE} .. && make install)
 if [ $? != 0 ]; then
     echo "Error: Installing library ${LIB_NAME} failed!"
-    rm_tmp
     exit 1
 fi
-
-rm_tmp
 
 exit 0
